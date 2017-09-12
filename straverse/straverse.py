@@ -63,7 +63,7 @@ class STraverse(object):
         # Will hold the results from each thread
         results = [None] * self.threads
 
-        # Construct a list of threads
+        # Construct a list of threads and fill it with thread objects
         threads = []
         for i in range(self.threads):
             thread = threading.Thread(target=Parser, args=(
