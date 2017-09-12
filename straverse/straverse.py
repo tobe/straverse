@@ -10,6 +10,7 @@ class STraverse(object):
     mmap = None
     fp = None
     signatures = [None]
+    config = None
 
     def __init__(self, threads: int) -> None:
         """ Initializes STraverse """
@@ -30,23 +31,22 @@ class STraverse(object):
     def load_config_file(self, file) -> bool:
         """ Loads and extracts useful information from the JSON configuration file. """
         try:
-            parsed_config = json.load(file)
+            self.config = json.load(file)
         except json.JSONDecodeError as e:
             print("Failed to load the config file: %s" % e.msg)
             return False
 
         # Check whether the signatures object is present
-        if not parsed_config["signatures"]:
+        if not self.config["signatures"]:
             return False
 
         # Verify the each signature contains a name and a pattern
-        for sig in parsed_config["signatures"]:
+        for sig in self.config["signatures"]:
             if "name" not in sig or "pattern" not in sig:
                 return False
-
+        
         # The test has passed
         return True
-
 
     def close_file(self) -> None:
         """ Closes the memory mapped file """
@@ -70,6 +70,7 @@ class STraverse(object):
                 int(chunk_size*i),
                 int(chunk_size*(i+1)),
                 self.mmap,
+                self.config["signatures"],
                 results
             ))
             threads.append(thread)

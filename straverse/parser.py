@@ -5,12 +5,16 @@ import threading
 class Parser(object):
     testing = None
 
-    def __init__(self, start: int, end: int, data: object, results: list) -> None:
+    def __init__(self, start: int, end: int, data: object,
+                 signatures: list, results: list) -> None:
         self.start = start
         self.end = end
         self.data = data
         self.results = results
+        self.signatures = signatures
+
         print("[%d] start: %d, end: %d" % (self.get_thread_id(), start, end))
+        print(self.signatures)
         self.parse()
 
     def parse(self) -> None:
