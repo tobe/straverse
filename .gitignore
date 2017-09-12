@@ -100,5 +100,8 @@ ENV/
 # mypy
 .mypy_cache/
 
+# IntelliJ
+.idea/
+
 # Custom testing crap
 test/
