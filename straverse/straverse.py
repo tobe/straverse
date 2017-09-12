@@ -1,23 +1,52 @@
 # -*- coding: utf-8 -*-
 import mmap
 import os
+import threading
+import json
+from .parser import Parser
 
 
 class STraverse(object):
     mmap = None
     fp = None
+    signatures = [None]
 
-    """ Initializes STraverse """
     def __init__(self, threads: int) -> None:
+        """ Initializes STraverse """
         self.threads = threads
 
-    """ Memory maps the file """
-    def load_file(self, file) -> None:
+    def load_input_file(self, file) -> bool:
+        """ Memory maps the file """
         self.fp = file
-        if os.name == 'nt':
-            self.mmap = mmap.mmap(file.fileno(), 0, access=mmap.ACCESS_READ)
-        else:
-            self.mmap = mmap.mmap(file.fileno(), 0, prot=mmap.PROT_READ)
+        try:
+            if os.name == 'nt':
+                self.mmap = mmap.mmap(file.fileno(), 0, access=mmap.ACCESS_READ)
+            else:
+                self.mmap = mmap.mmap(file.fileno(), 0, prot=mmap.PROT_READ)
+            return True
+        except:  # The documentation is really bad for this one.
+            return False
+
+    def load_config_file(self, file) -> bool:
+        """ Loads and extracts useful information from the JSON configuration file. """
+        try:
+            parsed_config = json.load(file)
+        except json.JSONDecodeError as e:
+            print("Failed to load the config file: %s" % e.msg)
+            return False
+
+        # Check whether the signatures object is present
+        if not parsed_config["signatures"]:
+            return False
+
+        # Verify the each signature contains a name and a pattern
+        for sig in parsed_config["signatures"]:
+            if "name" not in sig or "pattern" not in sig:
+                return False
+
+        # The test has passed
+        return True
+
 
     def close_file(self) -> None:
         """ Closes the memory mapped file """
@@ -31,8 +60,28 @@ class STraverse(object):
         print("File size: %s. Chunk size: %s. Using %d threads..." %
               (self.sizeof_fmt(file_size), self.sizeof_fmt(chunk_size), self.threads))
 
+        # Will hold the results from each thread
+        results = [None] * self.threads
+
+        # Construct a list of threads
+        threads = []
         for i in range(self.threads):
-            print("%d. From %d to %d" % (i, chunk_size*i, chunk_size*(i+1)))
+            thread = threading.Thread(target=Parser, args=(
+                int(chunk_size*i),
+                int(chunk_size*(i+1)),
+                self.mmap,
+                results
+            ))
+            threads.append(thread)
+
+        # Start all threads
+        for t in threads:
+            t.start()
+        # Wait until all threads finish
+        for t in threads:
+            t.join()
+
+        print(results)
 
     @staticmethod
     def sizeof_fmt(num: int, suffix: str = 'B') -> str:

@@ -45,6 +45,18 @@ def main():
         pass
         return
 
-    s.load_file(args.file)
+    # Load the input file
+    if not s.load_input_file(args.file):
+        print("Failed to load the input file.")
+        return
+
+    # Load the config file
+    if not s.load_config_file(args.input):
+        print("The JSON configuration file is erroneous.")
+        return
+
+    # Process the input file
     s.process()
+
+    # Close it when we're done
     s.close_file()
