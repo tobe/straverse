@@ -11,6 +11,9 @@
       }
   ],
   "options": {
-    "output_pattern": "constexpr ::std::ptrdiff_t m_{name} = {value};"
+    "output_pattern": "constexpr ::std::ptrdiff_t m_{name} = {value};",
+    "warn_on_mismatch": true,
+    "comment_prefix": "// ",
+    "output_mismatch": true
   }
 }
