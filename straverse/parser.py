@@ -12,9 +12,10 @@ class Parser(object):
         self.data = data
         self.results = results
         self.signatures = signatures
+        self.thread_id = self.get_thread_id()
 
-        print("[%d] start: %d, end: %d" % (self.get_thread_id(), start, end))
-        print(self.signatures)
+        print("[%d] start: %d, end: %d" % (self.thread_id, start, end))
+        # print(self.signatures)
         self.parse()
 
     @staticmethod
@@ -70,26 +71,29 @@ class Parser(object):
         return bytestring
 
     def parse(self) -> None:
-        """self.results[self.get_thread_id()] = {
-            "name": threading.current_thread().name,
-            "value": self.data[self.start:self.start+10]
-        }"""
-
+        # Set-up the algorithm
         chunk = self.data[self.start:self.end]
         chunk_table = self.build_table(chunk)
 
-        res = self.search(b"\xAA\xBB\xCC\xFF", chunk, chunk_table)
-        print("res", res)
+        # Initialize the result list
+        self.results[self.thread_id] = []
 
-        """for signature in self.signatures:
-            signature = self.fix_signature(signature)
-            res = self.search(b"\xCC\xCC\xCC", chunk, chunk_table)
-            print("result:", res)
-            return
-            # print(signature)"""
+        # Run a search for every signature
+        for signature_index, signature in enumerate(self.signatures):
+            byte_signature = self.fix_signature(signature)
+            res = self.search(byte_signature, chunk, chunk_table)
 
-        # self.testing = self.data[self.start:self.start+10]
-        # print(self.data[self.start:self.start+10])
+            # Save the results into the results list
+            self.results[self.thread_id].append({
+                "name": signature["name"],
+                "values": []
+            })
+
+            # Offset the addresses
+            res = [address + self.start for address in res]
+
+            # Store
+            self.results[self.thread_id][signature_index]["values"] = res
 
     @staticmethod
     def get_thread_id() -> int:

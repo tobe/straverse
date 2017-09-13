@@ -1,15 +1,15 @@
 {
-    "signatures": [
-        {
-            "name": "dwExample",
-            "pattern": "AA BB ? DD ?"
-        },
-        {
-            "name": "szFoo",
-            "pattern": "FF ? 11 22 ? ?"
-        }
-    ],
-    "options": {
-        "output_pattern": "constexpr ::std::ptrdiff_t m_{name} = {value};"
-    }
+  "signatures": [
+      {
+        "name": "dwExample",
+        "pattern": "CC 55 8B EC ?"
+      },
+      {
+        "name": "szFoo",
+        "pattern": "FF ? 11 22 ? ?"
+      }
+  ],
+  "options": {
+    "output_pattern": "constexpr ::std::ptrdiff_t m_{name} = {value};"
+  }
 }

@@ -74,7 +74,7 @@ class STraverse(object):
                 results
             ))
             threads.append(thread)
-            break
+            # break
 
         # Start all threads
         for t in threads:
