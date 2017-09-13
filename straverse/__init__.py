@@ -16,7 +16,7 @@ def main():
     parser.add_argument("-v", "--verify", help="Verify against a single signature", type=str)
     parser.add_argument("-c", "--convert",
                         help="Converts a signature into straverse compatible signature")
-    parser.add_argument("-t", "--threads", help="Number of threads to run", type=int, default=4)
+    parser.add_argument("-p", "--processes", help="Number of processes to run", type=int, default=4)
     parser.add_argument("file", nargs="?", type=argparse.FileType('rb'))
     args = parser.parse_args()
 
@@ -35,7 +35,7 @@ def main():
         sys.stderr = open(os.devnull, "a")
 
     # Instantiate STraverse
-    s = straverse.STraverse(args.threads)
+    s = straverse.STraverse(args.processes)
 
     if args.verify:
         # s.load_file(...)

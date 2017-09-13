@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-import threading
+import multiprocessing
 import binascii
 
 class Parser(object):
     testing = None
 
     def __init__(self, start: int, end: int, data: object,
-                 signatures: list, results: list) -> None:
+                 signatures: list, queue: object) -> None:
         self.start = start
         self.end = end
         self.data = data
-        self.results = results
+        self.queue = queue
         self.signatures = signatures
         self.thread_id = self.get_thread_id()
 
@@ -71,30 +71,21 @@ class Parser(object):
         return bytestring
 
     def parse(self) -> None:
-        # Set-up the algorithm
+        # Set-up the algorithm for the chunk
         chunk = self.data[self.start:self.end]
         chunk_table = self.build_table(chunk)
-
-        # Initialize the result list
-        self.results[self.thread_id] = []
 
         # Run a search for every signature
         for signature_index, signature in enumerate(self.signatures):
             byte_signature = self.fix_signature(signature)
             res = self.search(byte_signature, chunk, chunk_table)
 
-            # Save the results into the results list
-            self.results[self.thread_id].append({
+            # Put the results into the queue
+            self.queue.put({
                 "name": signature["name"],
-                "values": []
+                "values": res
             })
-
-            # Offset the addresses
-            res = [address + self.start for address in res]
-
-            # Store
-            self.results[self.thread_id][signature_index]["values"] = res
 
     @staticmethod
     def get_thread_id() -> int:
-        return int(threading.current_thread().name[-1:]) - 1
+        return int(multiprocessing.current_process().name[-1:]) - 1

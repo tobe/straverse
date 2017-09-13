@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import mmap
 import os
-import threading
+import multiprocessing
 import json
 from .parser import Parser
 
@@ -12,9 +12,9 @@ class STraverse(object):
     signatures = [None]
     config = None
 
-    def __init__(self, threads: int) -> None:
+    def __init__(self, processes: int) -> None:
         """ Initializes STraverse """
-        self.threads = threads
+        self.processes = processes
 
     def load_input_file(self, file) -> bool:
         """ Memory maps the file """
@@ -52,26 +52,26 @@ class STraverse(object):
         """ Closes the memory mapped file """
         self.mmap.close()
 
-    def process(self) -> None:
+    def process(self) -> dict:
         """ Processes the file. """
         # Determine the file size and the number of threads needed
         file_size = os.fstat(self.fp.fileno()).st_size
-        chunk_size = file_size / self.threads
+        chunk_size = file_size / self.processes
         print("File size: %s. Chunk size: %s. Using %d threads..." %
-              (self.sizeof_fmt(file_size), self.sizeof_fmt(chunk_size), self.threads))
+              (self.sizeof_fmt(file_size), self.sizeof_fmt(chunk_size), self.processes))
 
         # Will hold the results from each thread
-        results = [None] * self.threads
+        queue = multiprocessing.Queue()
 
         # Construct a list of threads and fill it with thread objects
         threads = []
-        for i in range(self.threads):
-            thread = threading.Thread(target=Parser, args=(
+        for i in range(self.processes):
+            thread = multiprocessing.Process(target=Parser, args=(
                 int(chunk_size*i),
                 int(chunk_size*(i+1)),
                 self.mmap,
                 self.config["signatures"],
-                results
+                queue
             ))
             threads.append(thread)
             # break
@@ -83,7 +83,16 @@ class STraverse(object):
         for t in threads:
             t.join()
 
-        print(results)
+        # Grab results from the queue and store them in a single resulting object
+        results = {}
+        while not queue.empty():
+            current_sig = queue.get()
+            if not current_sig["name"] in results:
+                results[current_sig["name"]] = []
+
+            results[current_sig["name"]] += current_sig["values"]
+
+        return results
 
     @staticmethod
     def sizeof_fmt(num: int, suffix: str = 'B') -> str:
