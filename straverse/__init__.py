@@ -56,7 +56,8 @@ def main():
         return
 
     # Process the input file
-    s.process()
+    result = s.process()
+    print(result)
 
     # Close it when we're done
     s.close_file()

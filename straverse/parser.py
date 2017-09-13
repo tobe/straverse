@@ -80,6 +80,9 @@ class Parser(object):
             byte_signature = self.fix_signature(signature)
             res = self.search(byte_signature, chunk, chunk_table)
 
+            # Fix the address offset
+            res = [self.start + address for address in res]
+
             # Put the results into the queue
             self.queue.put({
                 "name": signature["name"],
