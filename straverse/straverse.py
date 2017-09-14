@@ -12,9 +12,10 @@ class STraverse(object):
     signatures = [None]
     config = None
 
-    def __init__(self, processes: int) -> None:
+    def __init__(self, processes: int, quiet: bool) -> None:
         """ Initializes STraverse """
         self.processes = processes
+        self.quiet = quiet
 
     def load_input_file(self, file) -> bool:
         """ Memory maps the file """
@@ -57,8 +58,10 @@ class STraverse(object):
         # Determine the file size and the number of threads needed
         file_size = os.fstat(self.fp.fileno()).st_size
         chunk_size = file_size / self.processes
-        print("File size: %s. Chunk size: %s. Using %d threads..." %
-              (self.sizeof_fmt(file_size), self.sizeof_fmt(chunk_size), self.processes))
+
+        if not self.quiet:
+            print("File size: %s. Chunk size: %s. Using %d processes..." %
+                  (self.sizeof_fmt(file_size), self.sizeof_fmt(chunk_size), self.processes))
 
         # Will hold the results from each thread
         queue = multiprocessing.Queue()
@@ -67,11 +70,11 @@ class STraverse(object):
         threads = []
         for i in range(self.processes):
             thread = multiprocessing.Process(target=Parser, args=(
-                int(chunk_size*i),
-                int(chunk_size*(i+1)),
+                (int(chunk_size*i), int(chunk_size*(i+1))),
                 self.mmap,
                 self.config["signatures"],
-                queue
+                queue,
+                self.quiet
             ))
             threads.append(thread)
             # break

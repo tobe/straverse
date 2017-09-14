@@ -30,12 +30,12 @@ def main():
         sys.exit(1)
 
     # Set quietness
-    if args.quiet:
+    """if args.quiet:
         sys.stdout = open(os.devnull, "a")
-        sys.stderr = open(os.devnull, "a")
+        sys.stderr = open(os.devnull, "a")"""
 
     # Instantiate STraverse
-    s = straverse.STraverse(args.processes)
+    s = straverse.STraverse(args.processes, args.quiet)
 
     if args.verify:
         # s.load_file(...)
