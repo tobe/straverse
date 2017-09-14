@@ -3,6 +3,7 @@ import mmap
 import os
 import multiprocessing
 import json
+import time
 from .parser import Parser
 
 
@@ -55,6 +56,9 @@ class STraverse(object):
 
     def process(self) -> dict:
         """ Processes the file. """
+        # Save the start time
+        start = time.perf_counter()
+
         # Determine the file size and the number of threads needed
         file_size = os.fstat(self.fp.fileno()).st_size
         chunk_size = file_size / self.processes
@@ -94,6 +98,10 @@ class STraverse(object):
                 results[current_sig["name"]] = []
 
             results[current_sig["name"]] += current_sig["values"]
+
+        # Display time
+        if not self.quiet:
+            print("Time taken: %f seconds" % (time.perf_counter() - start))
 
         return results
 

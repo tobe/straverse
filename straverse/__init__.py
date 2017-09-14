@@ -2,8 +2,7 @@
 import argparse
 import sys
 import os
-import straverse.straverse as straverse
-
+from straverse import straverse, output
 
 def main():
     parser = argparse.ArgumentParser(
@@ -57,7 +56,14 @@ def main():
 
     # Process the input file
     result = s.process()
-    print(result)
-
     # Close it when we're done
     s.close_file()
+
+    # Call the Output class to generate some output if needed
+    o = output.Output(result)
+    if not args.quiet:
+        # Output to stdout
+        o.output_results()
+    if args.output:
+        # output to file
+        o.save_results()
