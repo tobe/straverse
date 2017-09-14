@@ -54,6 +54,21 @@ class Parser(object):
                 "values": res
             })
 
+            # Instantly print *found* signatures
+            if not self.quiet:
+                self.print_results(signature["name"], res)
+
+    def print_results(self, signature: str, results: list) -> None:
+        """ Prints found results for a single process """
+        if len(results) == 0:
+            return
+
+        print("[#%d] Found %s at %s" % (
+            self.get_process_id(),
+            signature,
+            ', '.join(hex(r) for r in results)
+        ))
+
     @staticmethod
     def get_process_id() -> int:
         return int(multiprocessing.current_process().name.split("-")[-1]) - 1
