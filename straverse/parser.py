@@ -3,8 +3,6 @@ import multiprocessing
 from .kmp import KMP
 
 class Parser(object):
-    testing = None
-
     def __init__(self, offsets: tuple, data: object,
                  signatures: list, queue: multiprocessing.Queue,
                  quiet: bool) -> None:
@@ -13,9 +11,10 @@ class Parser(object):
         self.queue = queue
         self.signatures = signatures
         self.quiet = quiet
+        self.process_id = self.get_process_id()
 
         print("[Worker #%d] Searching from %s to %s" % (
-            self.get_process_id(), hex(offsets[0]), hex(offsets[1])
+            self.process_id, hex(offsets[0]), hex(offsets[1])
         ))
         self.parse()
 
@@ -32,12 +31,22 @@ class Parser(object):
         return bytestring
 
     def parse(self) -> None:
+        """ Runs a search for every signature and stores found
+         signatures into a queue """
+
+        if not self.quiet:
+            self.print_message("Setting up the partial match table")
+
         # Set-up the algorithm for the chunk
         chunk = self.data[self.offsets[0]:self.offsets[1]]
         chunk_table = KMP.build_table(chunk)
 
         # Run a search for every signature
         for signature_index, signature in enumerate(self.signatures):
+            if not self.quiet:
+                self.print_message("Looking for %s" % signature["name"])
+
+            # Grab a byte signature and perform the search
             byte_signature = self.fix_signature(signature)
             res = KMP.search(byte_signature, chunk, chunk_table)
 
@@ -63,12 +72,16 @@ class Parser(object):
         if len(results) == 0:
             return
 
-        print("[#%d] Found %s at %s" % (
-            self.get_process_id(),
+        self.print_message("Found %s at %s" % (
             signature,
             ', '.join(hex(r) for r in results)
         ))
 
+    def print_message(self, message: str) -> None:
+        """ Prints a message prefixed with a worker ID """
+        print("[Worker #%d] %s" % (self.process_id, message))
+
     @staticmethod
     def get_process_id() -> int:
-        return int(multiprocessing.current_process().name.split("-")[-1]) - 1
+        """ Returns a process ID (number) """
+        return int(multiprocessing.current_process().name.split("-")[-1])
