@@ -13,8 +13,8 @@ class Parser(object):
         self.quiet = quiet
         self.process_id = self.get_process_id()
 
-        print("[Worker #%d] Searching from %s to %s" % (
-            self.process_id, hex(offsets[0]), hex(offsets[1])
+        self.print_message("Searching from %s to %s" % (
+            hex(offsets[0]), hex(offsets[1])
         ))
         self.parse()
 
