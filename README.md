@@ -1,1 +1,34 @@
 # straverse
+
+is a cross-platform, static file [signature scanner](https://wiki.alliedmods.net/Signature_scanning).
+>Sigscanning is a multi-step process involving extracting function signatures from a binary and then scanning for them at run-time to locate an otherwise-hidden function. 
+
+Given a signature (i.e. an array of bytes) and an input file,
+straverse tries to locate an address the said signature occurs,
+be it one or multiple times.  
+
+## Why?
+I wanted something portable and cross platform.
+Also, I find it very convenient to run a simple python program
+as opposed to executing something like IDA and running a script against
+a file.
+
+## Requirements
+* Python 3 (tested with 3.6.2)
+* colorama >= 0.3.9
+
+## Installation
+It's recommended, as always, to use [virtualenv](https://docs.python.org/3/library/venv.html):  
+Assuming *python3* points to Python version 3:
+```commandline
+$ virtualenv --python=/usr/bin/python3 <directory>
+$ source <directory>/bin/activate
+$ pip install -r requirements.txt
+$ ./straverse.py --help
+```
+
+## Configuration
+TBA
+
+## Example use-case
+TBA
