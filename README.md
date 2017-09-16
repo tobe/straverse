@@ -24,6 +24,8 @@ Assuming `python3` points to Python version 3:
 $ virtualenv --python=/usr/bin/python3 <directory>
 $ source <directory>/bin/activate
 $ pip install -r requirements.txt
+$ cp config.example.json config.json
+$ $EDITOR config.json
 $ ./straverse.py --help
 ```
 
