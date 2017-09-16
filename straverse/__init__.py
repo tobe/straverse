@@ -68,4 +68,4 @@ def main():
         o.output_results()
     if args.output:
         # output to file
-        o.save_results()
+        o.save_results(s.config["options"]["output"], args.output)

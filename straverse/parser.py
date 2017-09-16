@@ -25,7 +25,7 @@ class Parser(object):
         for byte in signature["pattern"].split():
             if byte != "?":
                 byte_int = int(byte, 16)
-                byte_hex = byte_int.to_bytes(1, byteorder="big")
+                byte_hex = byte_int.to_bytes(1, byteorder="big")  # A single byte, byteorder doesn't matter.
                 bytestring += byte_hex
             else:
                 bytestring += b"?"
@@ -59,6 +59,7 @@ class Parser(object):
                 res = [address + signature["offset"] for address in res]
 
             # Dereferencing: Instead of the address, take the value and convert it to an integer.
+            # The length depends on the user-defined setting, whether it's a uint32_t or similar.
             if "dereference" in signature:
                 for index, address in enumerate(res):
                     bytes = self.data[address:address + signature["length"]]
