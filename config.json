@@ -6,8 +6,9 @@
       },
       {
         "name": "szFoo",
-        "pattern": "FF ? 11 22 ? ?",
-        "offset": 1
+        "pattern": "FF AA ? ? ? ? 00",
+        "offset": 2
+        "dereference": true
       }
   ],
   "options": {

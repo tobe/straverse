@@ -18,8 +18,8 @@ a file.
 * colorama >= 0.3.9
 
 ## Installation
-It's recommended, as always, to use [virtualenv](https://docs.python.org/3/library/venv.html):  
-Assuming *python3* points to Python version 3:
+It's recommended, as always, to use [virtualenv](https://docs.python.org/3/library/venv.html).
+Assuming `python3` points to Python version 3:
 ```commandline
 $ virtualenv --python=/usr/bin/python3 <directory>
 $ source <directory>/bin/activate

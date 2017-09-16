@@ -53,6 +53,8 @@ class Parser(object):
             # Fix the address relative to the file
             res = [self.offsets[0] + address for address in res]
 
+            # TODO: Handle dereferencing
+
             # Now fix the offset, if required
             if "offset" in signature:
                 res = [address + signature["offset"] for address in res]
