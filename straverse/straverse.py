@@ -74,11 +74,15 @@ class STraverse(object):
         threads = []
         for i in range(self.processes):
             thread = multiprocessing.Process(target=Parser, args=(
-                (int(chunk_size*i), int(chunk_size*(i+1))),
+                (
+                    int(chunk_size*i),
+                    int(chunk_size*(i+1))
+                ),
                 self.mmap,
                 self.config["signatures"],
                 queue,
-                self.quiet
+                self.quiet,
+                self.config["options"]["endianness"]
             ))
             threads.append(thread)
             # break

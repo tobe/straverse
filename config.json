@@ -7,8 +7,9 @@
       {
         "name": "szFoo",
         "pattern": "FF AA ? ? ? ? 00",
-        "offset": 2
-        "dereference": true
+        "offset": 2,
+        "dereference": true,
+        "length": 4
       }
   ],
   "options": {
@@ -17,6 +18,7 @@
       "warn_on_mismatch": true,
       "output_mismatch": true,
       "comment_prefix": "// "
-    }
+    },
+    "endianness": "little"
   }
 }

@@ -5,12 +5,13 @@ from .kmp import KMP
 class Parser(object):
     def __init__(self, offsets: tuple, data: object,
                  signatures: list, queue: multiprocessing.Queue,
-                 quiet: bool) -> None:
+                 quiet: bool, endianness: str) -> None:
         self.offsets = offsets
         self.data = data
         self.queue = queue
         self.signatures = signatures
         self.quiet = quiet
+        self.endianness = endianness
         self.process_id = self.get_process_id()
 
         self.print_message("Searching from %s to %s" % (
@@ -53,11 +54,16 @@ class Parser(object):
             # Fix the address relative to the file
             res = [self.offsets[0] + address for address in res]
 
-            # TODO: Handle dereferencing
-
             # Now fix the offset, if required
             if "offset" in signature:
                 res = [address + signature["offset"] for address in res]
+
+            # Dereferencing: Instead of the address, take the value and convert it to an integer.
+            if "dereference" in signature:
+                for index, address in enumerate(res):
+                    bytes = self.data[address:address + signature["length"]]
+                    bytes_int = int.from_bytes(bytes, self.endianness)
+                    res[index] = bytes_int
 
             # Put the results into the queue
             self.queue.put({
