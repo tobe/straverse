@@ -15,7 +15,7 @@ a file.
 
 ## Requirements
 * Python 3 (tested with 3.6.2)
-* colorama >= 0.3.9
+* [colorama](https://github.com/tartley/colorama) >= 0.3.9 (included in `requirements.txt`)
 
 ## Installation
 It's recommended, as always, to use [virtualenv](https://docs.python.org/3/library/venv.html).
@@ -32,5 +32,11 @@ $ ./straverse.py --help
 ## Configuration
 TBA
 
+## Command line arguments
+TBA
+
 ## Example use-case
+TBA
+
+## Tests
 TBA
