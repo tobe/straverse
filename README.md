@@ -43,4 +43,9 @@ TBA
 ## Tests
 TBA
 
+## Notes
+Analyzing a Portable Executable where located bytes are not in `.text` will
+most likely display wrong bytes. This can be manually fixed (`fixpe`).  
+Note to self: do this properly one day.
+
 ## Reuse

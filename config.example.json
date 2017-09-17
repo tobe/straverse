@@ -9,7 +9,8 @@
         "pattern": "FF AA ? ? ? ? 00",
         "offset": 2,
         "dereference": true,
-        "length": 4
+        "length": 4,
+        "fixpe": "-0x400000"
       }
   ],
   "options": {

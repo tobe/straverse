@@ -14,6 +14,10 @@ class Output(object):
         if not no_colors:
             colorama.init()
 
+        # Fix duplicates
+        for name in self.results:
+            self.results[name] = list(set(self.results[name]))
+
     def output_results(self):
         for name, values in self.results.items():
             if len(values) == 0:

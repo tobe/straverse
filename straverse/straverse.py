@@ -82,7 +82,7 @@ class STraverse(object):
                 self.config["signatures"],
                 queue,
                 self.quiet,
-                self.config["options"]["endianness"]
+                self.config["options"]
             ))
             threads.append(thread)
             # break

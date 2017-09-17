@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 import multiprocessing
 from .kmp import KMP
+import pefile
 
 class Parser(object):
     def __init__(self, offsets: tuple, data: object,
                  signatures: list, queue: multiprocessing.Queue,
-                 quiet: bool, endianness: str) -> None:
+                 quiet: bool, options: dict) -> None:
         self.offsets = offsets
         self.data = data
         self.queue = queue
         self.signatures = signatures
         self.quiet = quiet
-        self.endianness = endianness
+        self.options = options
         self.process_id = self.get_process_id()
 
         self.print_message("Searching from %s to %s" % (
@@ -42,6 +43,11 @@ class Parser(object):
         chunk = self.data[self.offsets[0]:self.offsets[1]]
         chunk_table = KMP.build_table(chunk)
 
+        # Fix the addresses if it's a PE
+        if self.options["fixpe"]:
+            # https://stackoverflow.com/questions/20027990/how-can-i-get-text-section-from-pe-file-using-pefile
+            pe_sections = self.process_pe()
+
         # Run a search for every signature
         for signature_index, signature in enumerate(self.signatures):
             if not self.quiet:
@@ -60,11 +66,15 @@ class Parser(object):
 
             # Dereferencing: Instead of the address, take the value and convert it to an integer.
             # The length depends on the user-defined setting, whether it's a uint32_t or similar.
-            if "dereference" in signature:
+            if "dereference" in signature and signature["dereference"] is True:
                 for index, address in enumerate(res):
                     bytes = self.data[address:address + signature["length"]]
-                    bytes_int = int.from_bytes(bytes, self.endianness)
+                    bytes_int = int.from_bytes(bytes, self.options["endianness"])
                     res[index] = bytes_int
+
+                    # TODO: Do this properly
+                    if "fixpe" in signature:
+                        res[index] = bytes_int + int(signature["fixpe"], 16)
 
             # Put the results into the queue
             self.queue.put({
@@ -76,10 +86,15 @@ class Parser(object):
             if not self.quiet:
                 self.print_results(signature["name"], res)
 
+    def process_pe(self) -> dict:
+        pass
+
     def print_results(self, signature: str, results: list) -> None:
         """ Prints found results for a single process """
         if len(results) == 0:
             return
+
+        results = list(set(results))
 
         self.print_message("Found %s at %s" % (
             signature,
