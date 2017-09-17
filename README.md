@@ -44,8 +44,7 @@ TBA
 TBA
 
 ## Notes
-Analyzing a Portable Executable where located bytes are not in `.text` will
+Analyzing a portable executable where located bytes are not in `.text` will
 most likely display wrong bytes. This can be manually fixed (`fixpe`).  
-Note to self: do this properly one day.
-
-## Reuse
+Also, whilst dereferencing, keep in mind the relative offseting.  
+The proper way to do this would be at application runtime.
